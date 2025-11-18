@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronLeftIcon, Bars3Icon } from '../components/Icons';
 
 interface GoodsSelectionPageProps {
@@ -10,8 +10,8 @@ interface GoodsSelectionPageProps {
 const goods = [
   { 
     title: 'AI 응원봉 커스텀', 
-    img: 'https://i.pinimg.com/564x/4a/0c/8a/4a0c8a38381e47d1748286a2e482e9f0.jpg',
-    decorator: 'https://www.pngarts.com/files/3/Pink-Butterfly-PNG-Image.png',
+    img: 'https://i.postimg.cc/t4jYwYK6/Group-323.png',
+    decorator: 'https://i.postimg.cc/ZqfnWjCL/image-38.png', 
     gradient: 'from-pink-200/80 via-pink-50 to-white'
   },
   { title: '포토카드 제작', img: '', decorator: '', gradient: 'from-blue-200/80 via-blue-50 to-white' },
@@ -22,23 +22,71 @@ const goods = [
 const GoodsSelectionPage: React.FC<GoodsSelectionPageProps> = ({ userName, onBack, onNavigateToCreate }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const cardWidth = scrollRef.current.scrollWidth / goods.length;
-      const newIndex = Math.round(scrollLeft / cardWidth);
-      setActiveIndex(newIndex);
+  const scrollToCard = useCallback((index: number) => {
+    const scroller = scrollRef.current;
+    const card = cardRefs.current[index];
+    if (scroller && card) {
+      const scrollerRect = scroller.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const targetScrollLeft = scroller.scrollLeft + (cardRect.left - scrollerRect.left) - (scrollerRect.width / 2) + (cardRect.width / 2);
+      
+      scroller.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth',
+      });
+    }
+  }, []);
+
+  const handleCardClick = (index: number) => {
+    if (index === activeIndex) {
+      if (index === 0) { // Only the first card is navigable
+        onNavigateToCreate();
+      }
+    } else {
+      scrollToCard(index);
     }
   };
+
+  const handleScroll = useCallback(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+
+    const scrollCenter = scroller.scrollLeft + scroller.offsetWidth / 2;
+    
+    let closestIndex = -1;
+    let smallestDistance = Infinity;
+
+    cardRefs.current.forEach((card, index) => {
+      if (card) {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const distance = Math.abs(scrollCenter - cardCenter);
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          closestIndex = index;
+        }
+      }
+    });
+
+    if (closestIndex !== -1 && closestIndex !== activeIndex) {
+      setActiveIndex(closestIndex);
+    }
+  }, [activeIndex]);
 
   useEffect(() => {
     const scroller = scrollRef.current;
     if (scroller) {
-      scroller.addEventListener('scroll', handleScroll, { passive: true });
-      return () => scroller.removeEventListener('scroll', handleScroll);
+      let scrollEndTimer: number;
+      const onScroll = () => {
+        clearTimeout(scrollEndTimer);
+        scrollEndTimer = window.setTimeout(handleScroll, 150);
+      };
+      scroller.addEventListener('scroll', onScroll);
+      return () => scroller.removeEventListener('scroll', onScroll);
     }
-  }, []);
+  }, [handleScroll]);
+
 
   return (
     <div className="flex flex-col h-full bg-[#121212] overflow-y-auto">
@@ -52,8 +100,8 @@ const GoodsSelectionPage: React.FC<GoodsSelectionPageProps> = ({ userName, onBac
         </button>
       </header>
 
-      <main className="flex-grow flex flex-col pt-8 px-4">
-        <div className="text-left mb-8">
+      <main className="flex-grow flex flex-col">
+        <div className="text-left pt-8 mb-8 px-4">
           <h2 className="text-3xl font-bold">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">{userName} 님,</span>
             <br />
@@ -65,32 +113,31 @@ const GoodsSelectionPage: React.FC<GoodsSelectionPageProps> = ({ userName, onBac
           </p>
         </div>
 
-        {/* Carousel */}
-        <div className="flex-grow flex flex-col justify-center -mx-4">
+        <div className="flex-grow flex flex-col justify-center">
             <div 
               ref={scrollRef}
-              className="flex items-center overflow-x-auto snap-x snap-mandatory py-4"
-              style={{ scrollbarWidth: 'none', 'msOverflowStyle': 'none' }}
+              className="flex items-center overflow-x-auto snap-x snap-mandatory py-4 hide-scrollbar"
             >
               <div className="flex-shrink-0 w-12 snap-center"></div> {/* Spacer */}
               {goods.map((item, index) => (
                   <div key={index} className="snap-center flex-shrink-0 w-[70%] px-2">
                       <button 
-                        onClick={index === 0 ? onNavigateToCreate : undefined}
-                        disabled={index !== 0}
-                        className={`w-full h-[400px] rounded-3xl p-6 flex flex-col items-center text-center relative overflow-hidden transition-transform duration-300 transform ${activeIndex === index ? 'scale-100' : 'scale-90 opacity-70'} ${index !== 0 ? 'cursor-not-allowed justify-center' : 'justify-end'}`}
+                        // FIX: Changed the ref callback from an implicit return to an explicit block to satisfy the `Ref<HTMLButtonElement>` type, which expects a void return.
+                        ref={(el) => { cardRefs.current[index] = el; }}
+                        onClick={() => handleCardClick(index)}
+                        className={`w-full h-[400px] rounded-3xl p-6 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 transform ${activeIndex === index ? 'scale-100' : 'scale-90 opacity-70'} cursor-pointer`}
                       >
                           <div className={`absolute inset-0 bg-gradient-to-b ${item.gradient}`}></div>
                           {index === 0 ? (
                             <>
-                              {item.img && <img src={item.img} alt={item.title} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[60%] z-10 drop-shadow-lg" />}
+                              {item.img && <img src={item.img} alt={item.title} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] max-h-[55%] z-10 drop-shadow-lg" />}
                               {item.decorator && <img src={item.decorator} alt="" className="absolute top-1/4 right-0 w-20 h-20 opacity-80 z-20" />}
-                              <div className="relative z-10">
+                              <div className="relative z-10 mt-auto">
                                   <h3 className="text-2xl font-bold text-gray-800">{item.title}</h3>
                               </div>
                             </>
                           ) : (
-                            <div className="relative z-10">
+                            <div className="relative z-10 m-auto">
                                 <h3 className="text-2xl font-bold text-gray-700">{item.title}</h3>
                                 <p className="mt-2 font-semibold text-gray-500">Coming Soon</p>
                             </div>

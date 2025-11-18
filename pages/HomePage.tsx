@@ -6,13 +6,13 @@ interface HomePageProps {
 }
 
 const idols = [
-  { name: 'NEW JEANS', img: 'https://i.pinimg.com/564x/2b/96/52/2b96525979a3b6c6225a0988636b0439.jpg' },
+  { name: 'NEW JEANS', img: 'https://i.postimg.cc/6pJZr9t7/kontencheu-B-960-600-7-1.jpg' },
 ];
 
 const filters = ['인기 전체', '여자 아이돌', '남자 아이돌', '솔로'];
 
 const IdolCard = ({ name, img }: { name: string; img: string }) => (
-  <div className="relative w-full h-[480px] rounded-2xl overflow-hidden shadow-lg mb-4 group">
+  <div className="relative w-full aspect-[5/3] rounded-2xl overflow-hidden shadow-lg mb-4 group">
     <img src={img} alt={name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
     <h3 className="absolute bottom-6 left-6 text-white font-bold text-4xl font-serif tracking-wider">{name}</h3>
@@ -20,7 +20,7 @@ const IdolCard = ({ name, img }: { name: string; img: string }) => (
 );
 
 const ComingSoonCard = () => (
-  <div className="relative w-full h-[480px] rounded-2xl bg-gray-800 flex flex-col justify-center items-center text-center p-4 shadow-lg mb-4 border-2 border-dashed border-gray-600">
+  <div className="relative w-full aspect-[5/3] rounded-2xl bg-gray-800 flex flex-col justify-center items-center text-center p-4 shadow-lg mb-4 border-2 border-dashed border-gray-600">
     <h3 className="text-white font-bold text-3xl mb-2">Coming Soon</h3>
     <p className="text-gray-400">더 많은 아이돌이 곧 추가될 예정입니다!</p>
   </div>
@@ -28,6 +28,8 @@ const ComingSoonCard = () => (
 
 const HomePage: React.FC<HomePageProps> = ({ onSelectIdol }) => {
   const [activeFilter, setActiveFilter] = useState(filters[0]);
+
+  const showIdolList = activeFilter === '인기 전체' || activeFilter === '여자 아이돌';
 
   return (
     <div className="bg-[#121212] min-h-full">
@@ -70,7 +72,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSelectIdol }) => {
       
       {/* Main content: list of idol cards */}
       <main className="px-4">
-        {idols.map((idol) => (
+        {showIdolList && idols.map((idol) => (
            <button key={idol.name} onClick={() => onSelectIdol(idol.name)} className="w-full text-left focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-2xl">
             <IdolCard name={idol.name} img={idol.img} />
           </button>

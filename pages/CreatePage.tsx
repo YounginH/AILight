@@ -1,19 +1,21 @@
 import React, { useState, useCallback } from 'react';
 import { generateLightstickDesigns } from '../services/geminiService';
-import { ChevronLeftIcon, PaperAirplaneIcon, StarIcon, Bars3Icon } from '../components/Icons';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { ChevronLeftIcon, PaperAirplaneIcon, Bars3Icon } from '../components/Icons';
 
-type CreateState = 'prompting' | 'loading' | 'results' | 'saved';
+type CreateState = 'prompting' | 'loading' | 'results';
 
 interface CreatePageProps {
   onBack: () => void;
+  userName: string;
+  onSelectDesign: (imageUrl: string) => void;
 }
 
-const CreatePage: React.FC<CreatePageProps> = ({ onBack }) => {
+const CreatePage: React.FC<CreatePageProps> = ({ onBack, userName, onSelectDesign }) => {
   const [state, setState] = useState<CreateState>('prompting');
   const [prompt, setPrompt] = useState('');
   const [results, setResults] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) return;
@@ -35,20 +37,12 @@ const CreatePage: React.FC<CreatePageProps> = ({ onBack }) => {
     }
   }, [prompt]);
   
-  const handleSave = () => {
-      setState('saved');
-      setTimeout(() => {
-          handleReset();
-      }, 2000);
+  const handleConfirmSelection = () => {
+      if (selectedImageIndex !== null) {
+          onSelectDesign(results[selectedImageIndex]);
+      }
   }
 
-  const handleReset = () => {
-    setPrompt('');
-    setResults([]);
-    setError(null);
-    setState('prompting');
-  };
-  
   const renderHeader = () => (
       <header className="flex justify-between items-center p-4 bg-[#121212] border-b border-gray-800">
         <button onClick={onBack}>
@@ -65,29 +59,35 @@ const CreatePage: React.FC<CreatePageProps> = ({ onBack }) => {
     return (
       <div className="flex flex-col h-full">
         {renderHeader()}
-        <div className="flex flex-col flex-grow justify-center items-center p-8 text-center">
-            <LoadingSpinner />
-            <p className="mt-6 text-gray-400">AI가 Cherry님의 응원봉을 제작중이에요...</p>
+        <div className="flex flex-col flex-grow justify-center items-center p-8 text-center animate-pulse">
+            <img src="https://i.postimg.cc/CxP8nbrg/image-68.png" alt="Generating..." className="w-48 h-48 object-contain drop-shadow-[0_5px_15px_rgba(238,130,238,0.3)] animate-bounce" style={{ animationDuration: '2s' }}/>
+            <p className="mt-6 text-lg text-gray-300">
+                AI가 <span className="font-bold text-pink-400">{userName} 님</span>의 응원봉을 제작중이에요.
+            </p>
         </div>
       </div>
     );
   }
 
-  // FIX: Render the results view for both 'results' and 'saved' states to show the confirmation modal. This also resolves the TypeScript error.
-  if (state === 'results' || state === 'saved') {
+  if (state === 'results') {
     return (
         <div className="flex flex-col h-full bg-[#121212]">
             {renderHeader()}
             <main className="flex-grow p-4 overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4">AI 생성 결과</h2>
+                <h2 className="text-xl font-bold mb-1">AI 생성 결과</h2>
+                <p className="text-gray-400 text-sm mb-4">마음에 드는 디자인을 선택해 꾸며보세요.</p>
                 <div className="grid grid-cols-2 gap-4">
                     {results.map((src, index) => (
-                        <div key={index} className="relative aspect-[9/16] rounded-lg overflow-hidden group">
+                        <div 
+                          key={index} 
+                          className={`relative aspect-[9/16] rounded-lg overflow-hidden group cursor-pointer border-4 transition-all duration-200 ${selectedImageIndex === index ? 'border-pink-500' : 'border-transparent'}`}
+                          onClick={() => setSelectedImageIndex(index)}
+                        >
                             <img src={src} alt={`Generated lightstick ${index + 1}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="p-2 bg-white/20 rounded-full backdrop-blur-sm">
-                                    <StarIcon className="w-6 h-6 text-white"/>
-                                </button>
+                            <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${selectedImageIndex === index ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
+                                <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+                                    <p className="text-white font-bold">선택</p>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -95,19 +95,12 @@ const CreatePage: React.FC<CreatePageProps> = ({ onBack }) => {
             </main>
             <footer className="p-4 border-t border-gray-800">
                 <button 
-                    onClick={handleSave}
-                    className="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg font-semibold hover:scale-105 transform transition-transform duration-200 shadow-lg shadow-pink-500/20">
-                    저장하기
+                    onClick={handleConfirmSelection}
+                    disabled={selectedImageIndex === null}
+                    className="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg font-semibold hover:scale-105 transform transition-transform duration-200 shadow-lg shadow-pink-500/20 disabled:bg-gray-600 disabled:from-gray-600 disabled:to-gray-700 disabled:scale-100 disabled:shadow-none">
+                    이 디자인으로 꾸미기
                 </button>
             </footer>
-            {state === 'saved' && (
-                <div className="absolute inset-0 bg-black/60 flex justify-center items-center z-50">
-                    <div className="bg-gray-800 p-8 rounded-xl text-center shadow-2xl shadow-purple-500/20">
-                        <h3 className="text-xl font-bold mb-2">저장 완료!</h3>
-                        <p className="text-gray-400">생성된 응원봉이 저장되었습니다.</p>
-                    </div>
-                </div>
-            )}
         </div>
     );
   }

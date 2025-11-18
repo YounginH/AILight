@@ -1,5 +1,5 @@
 import React from 'react';
-import { LightbulbIcon } from '../components/Icons';
+// LightbulbIcon import 삭제함 (쓰지 않으므로)
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -11,8 +11,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       <div className="w-full text-left mb-12">
         <h1 className="text-3xl font-bold text-white mb-2">안녕하세요:)</h1>
         <div className="flex items-center text-3xl font-bold text-white mb-2">
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-pink-300 to-purple-400">Ailight</span>
-            <LightbulbIcon className="w-7 h-7 ml-1 text-pink-300" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-pink-300 to-purple-400">AIlight</span>
             <span> 입니다.</span>
         </div>
         <p className="text-gray-400 text-sm">간편 로그인으로 더 다양한 서비스를 이용하세요.</p>

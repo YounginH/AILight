@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Page } from './types';
+import { Page, SavedDesign } from './types';
 import BottomNav from './components/BottomNav';
 import SplashScreen from './pages/SplashScreen';
 import LoginPage from './pages/LoginPage';
@@ -12,7 +12,10 @@ import ProfilePage from './pages/ProfilePage';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Splash);
-  const [userName] = useState('Cherry'); // Hardcoded user name for now
+  const [userName] = useState('Cherry');
+  const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>([]);
+  const [activeDesignBase, setActiveDesignBase] = useState('https://i.postimg.cc/d0ZpCV0X/image-105.png');
+  const [editingDesign, setEditingDesign] = useState<SavedDesign | null>(null);
 
   useEffect(() => {
     if (currentPage === Page.Splash) {
@@ -31,11 +34,43 @@ const App: React.FC = () => {
     setCurrentPage(Page.GoodsSelection);
   };
   
-  const handleNavigation = (page: Page) => {
-    // Intercept the 'My Design' tab click to show the new PartSelection page,
-    // which is the new entry point for the creation flow.
-    if (page === Page.Create) {
+  const handleSaveDesign = (design: SavedDesign) => {
+    if (editingDesign) {
+      // Update existing design
+      setSavedDesigns(prev => prev.map(d => d.id === editingDesign.id ? design : d));
+      setEditingDesign(null);
+    } else {
+      // Add new design
+      setSavedDesigns(prevDesigns => [...prevDesigns, design]);
+    }
+  };
+  
+  const handleEditDesign = (designId: string) => {
+    const designToEdit = savedDesigns.find(d => d.id === designId);
+    if (designToEdit) {
+      setEditingDesign(designToEdit);
+      setActiveDesignBase(designToEdit.baseImage);
       setCurrentPage(Page.PartSelection);
+    }
+  };
+
+  const handleSelectAIDesign = (imageUrl: string) => {
+    setActiveDesignBase(imageUrl);
+    setEditingDesign(null); // Clear editing state when creating from AI
+    setCurrentPage(Page.PartSelection);
+  };
+
+  const handleNavigateToPartSelection = () => {
+    // Reset to default base when starting fresh
+    setActiveDesignBase('https://i.postimg.cc/d0ZpCV0X/image-105.png'); 
+    setEditingDesign(null);
+    setCurrentPage(Page.PartSelection);
+  };
+
+  const handleNavigation = (page: Page) => {
+    setEditingDesign(null); // Always reset editing state on main navigation
+    if (page === Page.Create) {
+      setCurrentPage(Page.GoodsSelection);
     } else {
       setCurrentPage(page);
     }
@@ -54,19 +89,32 @@ const App: React.FC = () => {
         return <GoodsSelectionPage 
                   userName={userName}
                   onBack={() => setCurrentPage(Page.Home)}
-                  onNavigateToCreate={() => setCurrentPage(Page.PartSelection)}
+                  onNavigateToCreate={handleNavigateToPartSelection}
                 />;
       case Page.PartSelection:
         return <PartSelectionPage 
-                  onBack={() => setCurrentPage(Page.GoodsSelection)} 
-                  onNavigateToCreate={() => setCurrentPage(Page.Create)}
+                  activeDesignBase={activeDesignBase}
+                  editingDesign={editingDesign}
+                  onBack={() => {
+                    setEditingDesign(null);
+                    setCurrentPage(Page.GoodsSelection);
+                  }} 
+                  onNavigateToCreate={() => {
+                    setEditingDesign(null);
+                    setCurrentPage(Page.Create);
+                  }}
+                  onSave={handleSaveDesign}
                 />
       case Page.Create:
-        return <CreatePage onBack={() => setCurrentPage(Page.PartSelection)} />;
+        return <CreatePage 
+                  userName={userName} 
+                  onBack={() => setCurrentPage(Page.PartSelection)} 
+                  onSelectDesign={handleSelectAIDesign}
+                />;
       case Page.Feed:
         return <FeedPage />;
       case Page.Profile:
-        return <ProfilePage />;
+        return <ProfilePage savedDesigns={savedDesigns} onEditDesign={handleEditDesign} />;
       default:
         return <HomePage onSelectIdol={handleSelectIdol} />;
     }
@@ -75,13 +123,8 @@ const App: React.FC = () => {
   const showNav = currentPage !== Page.Splash && currentPage !== Page.Login;
 
   const getActiveNavPage = (): Page => {
-    // If we're in the creation flow (parts selection or AI prompt), highlight the 'My Design' tab.
-    if (currentPage === Page.PartSelection || currentPage === Page.Create) {
+    if ([Page.GoodsSelection, Page.PartSelection, Page.Create].includes(currentPage)) {
       return Page.Create;
-    }
-     // Keep Home active for GoodsSelection as it's a continuation of browsing idols
-    if (currentPage === Page.GoodsSelection) {
-      return Page.Home;
     }
     return currentPage;
   };
