@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 // 아이콘 및 타입 경로는 기존 프로젝트 구조에 맞춰주세요
 import { ChevronLeftIcon, Bars3Icon, HeartIcon, RabbitIcon, BowIcon, LockIcon, GearIcon, StarIcon } from '../components/Icons';
@@ -131,7 +132,7 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
         </button>
       </header>
 
-      <main className="flex-grow flex flex-col p-4 overflow-hidden gap-4">
+      <main className="flex-grow flex flex-col px-4 pt-4 pb-1 overflow-hidden gap-4">
         {/* 상단 버튼 영역 */}
         <div className="flex-shrink-0 flex justify-end items-center gap-2">
           <button 
@@ -146,8 +147,8 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
           </button>
         </div>
 
-        {/* [수정됨] 캔버스 영역 - 상단 패딩 추가로 이미지 위치 내림 */}
-        <div className="flex-grow flex items-center justify-center min-h-0 overflow-hidden relative pt-10">
+        {/* [수정됨] 캔버스 영역 - 상단 패딩 조절 (pt-4) */}
+        <div className="flex-grow flex items-center justify-center min-h-0 overflow-hidden relative pt-4">
             {/* dropAreaRef는 이제 내부 div에 붙습니다. 
                relative와 inline-block을 사용하여 이미지 크기에 딱 맞게 영역이 잡히도록 합니다.
             */}
@@ -161,7 +162,7 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
                 <img 
                     src={activeDesignBase} 
                     alt="Lightstick Preview" 
-                    className="block max-w-full max-h-[50vh] object-contain drop-shadow-[0_10px_20px_rgba(238,130,238,0.25)] pointer-events-none select-none" 
+                    className="block max-w-full max-h-[45vh] object-contain drop-shadow-[0_10px_20px_rgba(238,130,238,0.25)] pointer-events-none select-none" 
                 />
                 
                 {/* 스티커들 */}
@@ -187,7 +188,7 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
         </div>
         
         {/* 하단 컨트롤 영역 */}
-        <div className="flex-shrink-0 flex flex-col gap-2">
+        <div className="flex-shrink-0 flex flex-col gap-2 mt-2">
             {/* 카테고리 탭 */}
             <div className="flex justify-between items-start p-2 bg-black/30 rounded-xl">
               {partCategories.map(cat => {
