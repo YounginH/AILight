@@ -1,0 +1,5 @@
+{
+  "name": "Ailight - AI Lightstick Designer",
+  "description": "An application that allows users to design and visualize custom K-pop lightsticks using generative AI. Users can enter prompts to generate unique designs, view creations from others, and manage their own collection.",
+  "requestFramePermissions": []
+}
