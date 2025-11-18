@@ -146,8 +146,8 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
           </button>
         </div>
 
-        {/* [수정됨] 캔버스 영역 */}
-        <div className="flex-grow flex items-center justify-center min-h-0 overflow-hidden relative">
+        {/* [수정됨] 캔버스 영역 - 상단 패딩 추가로 이미지 위치 내림 */}
+        <div className="flex-grow flex items-center justify-center min-h-0 overflow-hidden relative pt-10">
             {/* dropAreaRef는 이제 내부 div에 붙습니다. 
                relative와 inline-block을 사용하여 이미지 크기에 딱 맞게 영역이 잡히도록 합니다.
             */}
@@ -157,11 +157,11 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
                 onDrop={handleDrop}
                 className="relative inline-block max-w-full max-h-full"
             >
-                {/* 베이스 이미지: 드래그 방지(pointer-events-none) */}
+                {/* 베이스 이미지: 드래그 방지(pointer-events-none) - 높이 조절로 잘림 방지 */}
                 <img 
                     src={activeDesignBase} 
                     alt="Lightstick Preview" 
-                    className="block max-w-full max-h-[55vh] object-contain drop-shadow-[0_10px_20px_rgba(238,130,238,0.25)] pointer-events-none select-none" 
+                    className="block max-w-full max-h-[50vh] object-contain drop-shadow-[0_10px_20px_rgba(238,130,238,0.25)] pointer-events-none select-none" 
                 />
                 
                 {/* 스티커들 */}
