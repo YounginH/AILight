@@ -228,7 +228,7 @@ const PartSelectionPage: React.FC<PartSelectionPageProps> = ({ onBack, onNavigat
             
             {/* 파츠 선택 리스트 */}
             <div className="py-2 flex items-center justify-center h-24">
-                <div className="flex gap-6 overflow-x-auto px-4 no-scrollbar">
+                <div className="flex gap-6 justify-center px-4">
                     {/* 안전장치: 해당 카테고리에 아이템이 없어도 에러나지 않도록 || [] 처리 */}
                     {(partOptions[selectedCategory] || []).map(option => (
                         <button 

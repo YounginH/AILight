@@ -12,7 +12,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ savedDesigns, onEditDesign })
     <div className="p-4 bg-[#121212] min-h-full">
       <section className="flex items-center mb-6 pt-4">
         <img
-          src="https://i.postimg.cc/zX7X7p0G/cherry-profile.png"
+          src="https://i.postimg.cc/KYWWZ96b/unnamed.jpg"
           alt="User profile"
           className="w-16 h-16 rounded-full border-2 border-gray-700 object-cover"
         />

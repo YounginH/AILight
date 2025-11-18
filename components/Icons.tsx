@@ -46,32 +46,30 @@ export const HomeIcon: React.FC<IconProps> = (props) => (
   </svg>
 );
 
-// This is now the "My Design" icon
 export const SparklesIcon: React.FC<IconProps> = (props) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path d="M15.42 2.85a1.5 1.5 0 00-2.12 0L6.85 9.29a.5.5 0 000 .71l4.59 4.59a.5.5 0 00.71 0l6.44-6.44a1.5 1.5 0 000-2.12l-3.17-3.18zM5 16.5l-2-2 5.5-5.5 4 4-7.5 7.5z" />
-        <path d="M21.5 6a1 1 0 01-1.414 0L19 4.914l-1.086 1.086a1 1 0 11-1.414-1.414L17.586 3.5l-1.086-1.086a1 1 0 111.414-1.414L19 2.086l1.086-1.086a1 1 0 111.414 1.414L20.414 3.5l1.086 1.086a1 1 0 010 1.414z" />
-        <path d="M17.5 10.5a1 1 0 01-1.414 0L15 9.414l-1.086 1.086a1 1 0 11-1.414-1.414L13.586 8l-1.086-1.086a1 1 0 111.414-1.414L15 6.586l1.086-1.086a1 1 0 111.414 1.414L16.414 8l1.086 1.086a1 1 0 010 1.414z" />
-    </svg>
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path d="M15.162 3.096a.75.75 0 0 1 1.06 0l2.68 2.68a.75.75 0 0 1 0 1.06L8.975 16.763l-3.848 1.085a.25.25 0 0 1-.312-.312l1.085-3.848L15.162 3.096ZM18.5 2.5L17.5 4 16 4.5 17.5 6 18.5 7.5 19.5 6 21 4.5 19.5 4 18.5 2.5Z"/>
+    <path d="M4.5 18.5L4 20l-1.5.5L4 21l.5 1.5.5-1.5 1.5-.5-1.5-.5-.5-1.5Z"/>
+    <path d="M20 18l-.5 1.5L18 20l1.5.5.5 1.5.5-1.5 1.5-.5-1.5-.5-.5-1.5Z"/>
+  </svg>
 );
 
-// This is the Board icon
 export const BoardIcon: React.FC<IconProps> = (props) => (
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <path d="M7 4C6.44772 4 6 4.44772 6 5V19C6 19.5523 6.44772 20 7 20H13C13.5523 20 14 19.5523 14 19V5C14 4.44772 13.5523 4 13 4H7ZM16 8C15.4477 8 15 8.44772 15 9V15C15 15.5523 15.4477 16 16 16H17C18.1046 16 19 15.1046 19 14V10C19 8.89543 18.1046 8 17 8H16Z"/>
+    <path fillRule="evenodd" d="M19.5 21a3 3 0 003-3V9a3 3 0 00-3-3h-5.379a.75.75 0 01-.53-.22L11.47 3.66A2.25 2.25 0 009.879 3H4.5a3 3 0 00-3 3v12a3 3 0 003 3h15zm-6.858-10.557a.75.75 0 00-1.284 0l-1.053 1.92-2.14.386a.75.75 0 00-.405 1.26l1.493 1.578-.27 2.2a.75.75 0 001.077.775L12 17.65l1.94.913a.75.75 0 001.078-.776l-.27-2.199 1.493-1.578a.75.75 0 00-.406-1.261l-2.14-.386-1.053-1.92z" clipRule="evenodd" />
   </svg>
 );
 
 
 export const UserCircleIcon: React.FC<IconProps> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
+      <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
     </svg>
 );
 
-export const PlusCircleIcon: React.FC<IconProps> = (props) => (
+export const PlusIcon: React.FC<IconProps> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
 );
 
@@ -107,21 +105,18 @@ export const StarIcon: React.FC<IconProps> = (props) => (
 
 export const HeartIcon: React.FC<IconProps> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    {/* FIX: The previous SVG path was incorrect and rendered as a loading spinner. Replaced with a proper solid heart path. */}
     <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.942 0 4.661 5.571 9.627 12 15.81 6.43-6.181 12-11.149 12-15.81 0-6.792-8.875-8.306-12-2.942z"/>
   </svg>
 );
 
 export const RabbitIcon: React.FC<IconProps> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    {/* FIX: Replaced the corrupted SVG path with a simpler, validated path to prevent rendering errors. */}
     <path d="M16 10.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5v-4zM7 10.5c0-.83.67-1.5 1.5-1.5S10 9.67 10 10.5v4c0 .83-.67 1.5-1.5 1.5S7 15.33 7 14.5v-4zM12 2c-3.31 0-6 2.69-6 6v4c0 1.1.9 2 2 2h1.5v2.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14h2v2.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V14H16c1.1 0 2-.9 2-2v-4c0-3.31-2.69-6-6-6z"/>
   </svg>
 );
 
 export const BowIcon: React.FC<IconProps> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    {/* FIX: Replaced the corrupted SVG path with a simpler, validated path to prevent rendering errors. */}
     <path d="M21.56 11.25L13.17 2.87c-.39-.39-1.02-.39-1.41 0L3.37 11.25c-.39.39-.39 1.02 0 1.41l8.38 8.38c.39.39 1.02.39 1.41 0l8.38-8.38c.4-.39.4-1.02.02-1.41zM12 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
   </svg>
 );
