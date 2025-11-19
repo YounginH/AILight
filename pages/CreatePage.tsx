@@ -20,6 +20,7 @@ const CreatePage: React.FC<CreatePageProps> = ({ onBack, userName, onSelectDesig
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) return;
 
+    setSelectedImageIndex(null);
     setState('loading');
     setError(null);
     try {
@@ -93,11 +94,17 @@ const CreatePage: React.FC<CreatePageProps> = ({ onBack, userName, onSelectDesig
                     ))}
                 </div>
             </main>
-            <footer className="p-4 border-t border-gray-800">
+            <footer className="p-4 border-t border-gray-800 flex gap-3">
+                <button 
+                    onClick={handleGenerate}
+                    className="flex-1 py-3 bg-gray-700 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                >
+                    재생성
+                </button>
                 <button 
                     onClick={handleConfirmSelection}
                     disabled={selectedImageIndex === null}
-                    className="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg font-semibold hover:scale-105 transform transition-transform duration-200 shadow-lg shadow-pink-500/20 disabled:bg-gray-600 disabled:from-gray-600 disabled:to-gray-700 disabled:scale-100 disabled:shadow-none">
+                    className="flex-[2] py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg font-semibold hover:scale-105 transform transition-transform duration-200 shadow-lg shadow-pink-500/20 disabled:bg-gray-600 disabled:from-gray-600 disabled:to-gray-700 disabled:scale-100 disabled:shadow-none">
                     이 디자인으로 꾸미기
                 </button>
             </footer>
