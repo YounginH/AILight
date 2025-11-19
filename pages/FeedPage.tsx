@@ -42,17 +42,28 @@ const moodboardItems = [
 ];
 
 const suggestionItems = [
-    { id: 101, src: 'https://i.postimg.cc/dV8zwPFg/Kakao-Talk-20251119-010108271-09.jpg' },
-    { id: 102, src: 'https://i.postimg.cc/k5szRQBf/Rectangle-173.png' },
-    { id: 103, src: 'https://i.postimg.cc/ZRDQVJPP/image-147.png' },
-    { id: 104, src: 'https://i.postimg.cc/cCpbGTbL/Chat-GPT-Image-2025nyeon-10wol-11il-ohu-09-12-16-2.png' },
-    { id: 105, src: 'https://i.postimg.cc/BZRSv3Wg/Chat-GPT-Image-2025nyeon-10wol-11il-ohu-10-16-20-2.png' },
-    { id: 106, src: 'https://i.postimg.cc/SxhmWGx8/daunlodeu-(1)-1.png' },
+    { id: 101, src: 'https://i.postimg.cc/MpN29K9y/1761627382319-1.png' }, // Rabbit Lightstick
+    { id: 102, src: 'https://i.postimg.cc/HLrXbHxn/Kakao-Talk-20251119-010108271-10.jpg' }, // Deco Detail
+    { id: 103, src: 'https://i.postimg.cc/QM8nDF0n/Lightstik-officiel-de-Lunea.png' }, // Moon Lightstick
+    { id: 104, src: 'https://i.postimg.cc/Dy7GB103/Kakao-Talk-20251119-010108271-01.jpg' }, // Ribbon Detail
+    { id: 105, src: 'https://i.postimg.cc/v8hT8kY7/Lightstick-kpop-dr.png' }, // Heart Lightstick
+    { id: 106, src: 'https://i.postimg.cc/SxhmWGx8/daunlodeu-(1)-1.png' }, // Cute Green
+    { id: 107, src: 'https://i.postimg.cc/263WrG4J/K-pop-LIGHTSTICK-for-dr-(AI)-1.png' }, // Drawn Style
+    { id: 108, src: 'https://i.postimg.cc/hPY5BZTN/1761626699038-1.png' }, // Fancy Bow
 ];
 
-const MoodboardCard: React.FC<{ src: string }> = ({ src }) => (
-    <div className="break-inside-avoid mb-4">
-        <img src={src} alt="Moodboard item" className="w-full h-auto object-cover rounded-2xl" />
+// [수정됨] MoodboardCard: 호버 시 '내 보드에 담기' 버튼 표시 및 기능 추가
+const MoodboardCard: React.FC<{ src: string; onAdd: (src: string) => void }> = ({ src, onAdd }) => (
+    <div className="break-inside-avoid mb-4 relative group rounded-2xl overflow-hidden">
+        <img src={src} alt="Moodboard item" className="w-full h-auto object-cover" />
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+                onClick={() => onAdd(src)}
+                className="bg-pink-500 text-white text-xs font-bold py-2 px-4 rounded-full shadow-lg hover:scale-105 transition-transform"
+            >
+                내 보드에 담기
+            </button>
+        </div>
     </div>
 );
 
@@ -66,6 +77,9 @@ const FeedPage: React.FC = () => {
   // 상세 페이지(무드보드 만들기) 상태
   const [boardTitle, setBoardTitle] = useState('');
   const [myPins, setMyPins] = useState<string[]>([]);
+  
+  // [추가됨] 수정 중인 보드 ID (null이면 새 보드 작성)
+  const [editingBoardId, setEditingBoardId] = useState<number | null>(null);
 
   // 탭을 변경하면 목록 뷰로 초기화
   const handleTabChange = (tab: 'all' | 'home') => {
@@ -73,35 +87,70 @@ const FeedPage: React.FC = () => {
       setView('list');
   };
 
-  // 만들기 버튼 클릭 핸들러
+  // 만들기 버튼 클릭 핸들러 (새 보드 시작)
   const handleCreateClick = () => {
       setBoardTitle(''); // 제목 초기화
       setMyPins([]);     // 핀 초기화
+      setEditingBoardId(null); // 새 보드 모드
       setView('detail');
+  };
+
+  // 저장된 보드 열기 핸들러
+  const handleOpenSavedBoard = (board: typeof initialSavedMoodboards[0]) => {
+      setBoardTitle(board.title);
+      setMyPins(board.pins);
+      setEditingBoardId(board.id); // 수정 모드 (ID 설정)
+      setView('detail');
+  };
+
+  // 피드에서 바로 보드로 담는 핸들러 (새 보드로 시작)
+  const handleAddToBoardFromFeed = (src: string) => {
+      setBoardTitle('');      // 새 보드 제목 초기화
+      setMyPins([src]);       // 선택한 이미지 담기
+      setEditingBoardId(null); // 새 보드 모드
+      setView('detail');      // 상세(제작) 화면으로 이동
   };
 
   const handleAddToBoard = (src: string) => {
       setMyPins(prev => [src, ...prev]);
   };
 
-  // 완료 버튼 클릭 핸들러 (저장 로직)
+  // 완료 버튼 클릭 핸들러 (저장 및 수정 로직)
   const handleComplete = () => {
       if (myPins.length === 0 && !boardTitle) {
           setView('list'); // 내용이 없으면 그냥 나감
           return;
       }
 
-      const newBoard = {
-          id: Date.now(),
-          title: boardTitle || "무제",
-          pins: [...myPins], // 현재 핀 복사
-          count: myPins.length,
-          date: "방금 전"
-      };
+      if (editingBoardId) {
+          // [수정 로직] 기존 보드 업데이트
+          setSavedMoodboards(prev => prev.map(board => 
+              board.id === editingBoardId 
+                  ? { 
+                      ...board, 
+                      title: boardTitle || "무제", 
+                      pins: [...myPins], 
+                      count: myPins.length,
+                      date: "방금 전" // 수정 시 시간 업데이트
+                    }
+                  : board
+          ));
+      } else {
+          // [생성 로직] 새 보드 추가
+          const newBoard = {
+              id: Date.now(),
+              title: boardTitle || "무제",
+              pins: [...myPins], // 현재 핀 복사
+              count: myPins.length,
+              date: "방금 전"
+          };
+          // 새 보드를 목록 맨 앞에 추가
+          setSavedMoodboards(prev => [newBoard, ...prev]);
+      }
 
-      // 새 보드를 목록 맨 앞에 추가
-      setSavedMoodboards(prev => [newBoard, ...prev]);
+      setActiveTab('home'); // 저장 후에는 홈 탭의 목록을 보여줌
       setView('list');
+      setEditingBoardId(null); // 편집 상태 초기화
   };
 
   const renderDetailView = () => (
@@ -155,7 +204,6 @@ const FeedPage: React.FC = () => {
                {suggestionItems.map((item) => (
                    <div key={item.id} className="rounded-xl overflow-hidden h-40 relative group">
                        <img src={item.src} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Suggestion" />
-                       {/* 담기 버튼 오버레이 (하나만 유지) */}
                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                            <button 
                                 onClick={() => handleAddToBoard(item.src)}
@@ -212,33 +260,32 @@ const FeedPage: React.FC = () => {
                       className="w-full bg-white text-black rounded-full py-2.5 pl-11 pr-4 focus:outline-none placeholder-gray-500 border-none font-medium"
                     />
                 </div>
-                <button className="flex-shrink-0">
+                <button className="flex-shrink-0" onClick={handleCreateClick}>
                     <PlusIcon className="w-8 h-8 text-gray-300 hover:text-white transition-colors" />
                 </button>
             </div>
         </header>
 
         <main className="flex-grow p-4">
-            {activeTab === 'all' ? (
-                <div className="columns-2 gap-4 space-y-4">
-                    {moodboardItems.map(item => (
-                        <MoodboardCard key={item.id} src={item.src} />
-                    ))}
-                </div>
+            {view === 'detail' ? (
+                renderDetailView()
             ) : (
-                // Home Tab
-                view === 'detail' ? (
-                    renderDetailView()
+                activeTab === 'all' ? (
+                    <div className="columns-2 gap-4 space-y-4">
+                        {moodboardItems.map(item => (
+                            <MoodboardCard key={item.id} src={item.src} onAdd={handleAddToBoardFromFeed} />
+                        ))}
+                    </div>
                 ) : (
+                    // Home Tab List View
                     <div className="space-y-8 pb-20">
                         {/* 저장한 아이디어 섹션 */}
                         <section>
                             <h2 className="text-lg font-bold text-white mb-4">저장한 아이디어</h2>
                             <div className="flex space-x-4 overflow-x-auto pb-4">
                                 {savedMoodboards.map((board) => (
-                                    <div key={board.id} className="flex-shrink-0 w-64 group cursor-pointer">
+                                    <div key={board.id} onClick={() => handleOpenSavedBoard(board)} className="flex-shrink-0 w-64 group cursor-pointer">
                                         <div className="h-40 rounded-2xl overflow-hidden bg-gray-800 grid grid-cols-3 gap-0.5 mb-3">
-                                            {/* 핀 개수에 따른 동적 레이아웃 */}
                                             {board.pins.length > 0 && (
                                                 <div className={`h-full bg-gray-700 ${board.pins.length === 1 ? 'col-span-3' : 'col-span-2'}`}>
                                                     <img src={board.pins[0]} className="w-full h-full object-cover" alt="Main" />
@@ -260,7 +307,6 @@ const FeedPage: React.FC = () => {
                                                 </div>
                                             )}
                                             
-                                            {/* 핀이 없을 때 빈 상태 처리 (혹시 모를 에러 방지) */}
                                             {board.pins.length === 0 && (
                                                 <div className="col-span-3 h-full bg-gray-800 flex items-center justify-center text-gray-600">
                                                     No Image
@@ -293,7 +339,6 @@ const FeedPage: React.FC = () => {
                                         </div>
                                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            {/* 만들기 버튼 클릭 시 상세(제작) 뷰로 전환 */}
                                             <button 
                                                 onClick={handleCreateClick}
                                                 className="bg-white text-black text-xs font-bold py-2 px-5 rounded-full shadow-lg hover:scale-105 transition-transform"
